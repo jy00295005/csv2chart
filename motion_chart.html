@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="zh-CN" ng-app="infoChart">
+  <!-- 导入header -->
+  <div ng-include="'basic/header.html'"></div>
+  <body>
+    <!-- 导入导航栏 -->
+    <div ng-include="'basic/nav.html'"></div>
+
+    
+    <hr>
+    <div class="container">
+      <div ng-controller="motion_ctrl">
+        <div class="row">
+          <div class="col-md-12">
+            <h3>Insert motion chart csv</h3>
+            <h4>header</h4>
+            <input class="form-control" type="text" ng-model="motion_header_csv">
+            <h4>header type</h4>
+            <input class="form-control" type="text" ng-model="motion_header_type_csv">
+            <h4>data</h4>
+            <textarea name="" id="" style="min-width: 100%" rows="10" ng-model="motion_csv"></textarea>
+            <button class="btn btn-primary" ng-click="create_motion_chart()">create chart</button>
+          </div>
+          <div class="col-md-12">
+            <info-charts-motion chart-data="motion_chart" chart-width="1024" chart-height="600"  ng-if="motion_chart"></info-charts-motion>
+          </div>
+        </div>
+      </div>
+      <!-- 导入footer -->
+      <div ng-include="'basic/footer.html'"></div>
+    </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/js/angular.js"></script>
+    <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="assets/js/ng_app.js"></script>
+    <script src="assets/js/jquery.csv.js"></script>
+    <script src="assets/js/ngInfoChart.js"></script>
+
+  </body>
+</html>
+<script>
+  infoChart.controller('motion_ctrl', function($scope, $http) {
+
+    $scope.motion_csv = motion_chart_csv_data;
+    $scope.motion_header_csv = motion_header_csv;
+    $scope.motion_header_type_csv = motion_header_type_csv;
+   
+    $scope.create_motion_chart = function () {
+      if ($scope.motion_csv == '' || $scope.motion_header_csv == '' || $scope.motion_header_type_csv == '') {
+        alert("please enter correct data");
+      }else{
+        header_csv = $.csv.toArray($scope.motion_header_csv);
+        header_type = $.csv.toArray($scope.motion_header_type_csv);
+        motion_header = {};
+
+        angular.forEach(header_csv, function(header_name, header_key) {
+          motion_header[$.trim(header_name)] = header_type[$.trim(header_key)];
+        });
+
+        motion_data = $.csv.toArrays($scope.motion_csv);
+        angular.forEach(motion_data, function(value, key) {
+          angular.forEach(value, function(vv, kk) {
+            value_type = header_type[kk];
+            motion_data[key][kk] = $.trim(vv);
+            if (value_type == 'number') {
+              motion_data[key][kk] = Number(vv);
+            };
+          });
+        });
+        $scope.motion_chart = {
+          header:motion_header,
+          data:motion_data
+        };
+      };
+    }
+  })
+</script>
