@@ -7,8 +7,29 @@
     <div ng-include="'basic/nav.html'"></div>
 
     
+    <hr>
+    <div class="container">
+      <!-- Example row of columns -->
+      <div ng-controller="heatmap_ctrl">
+        <div class="row">
+          <div class="col-md-12">
+            <h3>Insert Heatmap chart csv</h3>
+            <h4>Title</h4>
+            <input class="form-control" type="text" ng-model="title_csv">
+            <h4>xAxis</h4>
+            <input class="form-control" type="text" ng-model="xAxis_csv">
+            <h4>yAxis</h4>
+            <input class="form-control" type="text" ng-model="yAxis_csv">
+            <h4>Series data</h4>
+            <textarea name="" id="" style="min-width: 100%" rows="10" ng-model="heatmap_csv"></textarea>
+            <button class="btn btn-primary" ng-click="create_heatmap_chart()">create chart</button>
+          </div>
+          <div class="col-md-12">
+            <info-charts-heatmap chart-data="heatmap_chart" ng-if="heatmap_chart"></info-charts-heatmap>
+          </div>
+        </div>
+      </div>
       <hr>
-      
       <!-- 导入footer -->
       <div ng-include="'basic/footer.html'"></div>
     </div> <!-- /container -->
@@ -16,10 +37,142 @@
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src="assets/js/angular.js"></script>
     <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="assets/js/angular.js"></script>
     <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script src="assets/js/jquery.csv.js"></script>
+    
     <script src="assets/js/ng_app.js"></script>
+    <script src="assets/js/ngInfoChart.js"></script>
 
   </body>
 </html>
+
+<script>
+  infoChart.controller('heatmap_ctrl', function($scope, $http) {
+
+    $scope.heatmap_csv='Alexander, Monday, 10\n'+
+                          'Alexander, Tuesday, 19\n'+
+                          'Alexander, Wednesday, 8\n'+
+                          'Alexander, Thursday, 24\n'+
+                          'Alexander, Friday, 67\n'+
+                          'Marie, Monday, 92\n'+
+                          'Marie, Tuesday, 58\n'+
+                          'Marie, Wednesday, 78\n'+
+                          'Marie, Thursday, 117\n'+
+                          'Marie, Friday, 48\n'+
+                          'Maximilian, Monday, 35\n'+
+                          'Maximilian, Tuesday, 15\n'+
+                          'Maximilian, Wednesday, 123\n'+
+                          'Maximilian, Thursday, 64\n'+
+                          'Maximilian, Friday, 52\n'+
+                          'Sophia, Monday, 72\n'+
+                          'Sophia, Tuesday, 132\n'+
+                          'Sophia, Wednesday, 114\n'+
+                          'Sophia, Thursday, 19\n'+
+                          'Sophia, Friday, 16\n'+
+                          'Lukas, Monday, 38\n'+
+                          'Lukas, Tuesday, 5\n'+
+                          'Lukas, Wednesday, 8\n'+
+                          'Lukas, Thursday, 117\n'+
+                          'Lukas, Friday, 115\n'+
+                          'Maria, Monday, 88\n'+
+                          'Maria, Tuesday, 32\n'+
+                          'Maria, Wednesday, 12\n'+
+                          'Maria, Thursday, 6\n'+
+                          'Maria, Friday, 120\n'+
+                          'Leon, Monday, 13\n'+
+                          'Leon, Tuesday, 44\n'+
+                          'Leon, Wednesday, 88\n'+
+                          'Leon, Thursday, 98\n'+
+                          'Leon, Friday, 96\n'+
+                          'Anna, Monday, 31\n'+
+                          'Anna, Tuesday, 1\n'+
+                          'Anna, Wednesday, 82\n'+
+                          'Anna, Thursday, 32\n'+
+                          'Anna, Friday, 30\n'+
+                          'Tim, Monday, 85\n'+
+                          'Tim, Tuesday, 97\n'+
+                          'Tim, Wednesday, 123\n'+
+                          'Tim, Thursday, 64\n'+
+                          'Tim, Friday, 84\n'+
+                          'Laura, Monday, 47\n'+
+                          'Laura, Tuesday, 114\n'+
+                          'Laura, Wednesday, 31\n'+
+                          'Laura, Thursday, 48\n'+
+                          'Laura, Friday, 91';
+      $scope.title_csv = 'Sales per employee per weekday';
+      $scope.xAxis_csv = 'Alexander,Marie,Maximilian,Sophia,Lukas,Maria,Leon,Anna,Tim,Laura';
+      $scope.yAxis_csv = 'Monday,Tuesday,Wednesday,Thursday,Friday';
+     
+      $scope.create_heatmap_chart = function () {
+        if ($scope.heatmap_csv == '' || $scope.xAxis_csv == '' || $scope.yAxis_csv == '') {
+          alert("please enter correct data");
+        }else{
+          title_text_csv = $scope.title_csv;
+          xAxis_categories_csv = $.csv.toArray($scope.xAxis_csv);
+          yAxis_categories_csv = $.csv.toArray($scope.yAxis_csv);
+          xy_temp = $.csv.toArrays($scope.heatmap_csv);
+
+
+          //构建字典
+          x=xAxis_categories_csv.length//x轴长度
+          y=yAxis_categories_csv.length//y轴长度
+          //将x轴，形成index字典
+          x_values=new Array(x);
+          x_dic=new Object()
+          for (var i = 0; i < x; i++) {
+            x_values[i]=i
+            x_dic[xAxis_categories_csv[i]]=x_values[i]
+          };
+          // console.log(x_dic)
+
+
+          //将y轴，形成inde字典
+          y_values=new Array(y);
+          y_dic=new Object()
+          for (var i = 0; i < y; i++) {
+            y_values[i]=i
+            y_dic[yAxis_categories_csv[i]]=y_values[i]
+          };
+          // console.log(y_dic)
+
+          //如果用户输入该坐标，则将xy中 的值替换成用户输入的值；如果没有输入，则默认为0；
+          //构建数组，初始值赋值0
+          var xy=new Array(x*y);
+          for (var i = 0; i < x; i++) {
+            for (var  j= 0; j < y; j++) {
+              xy[i*y+j]=new Array([3]);
+              xy[i*y+j][0]=i;
+              xy[i*y+j][1]=j;
+              xy[i*y+j][2]=0
+            };
+          };
+          //将xy中的数据替换成用户输入的数值
+          angular.forEach(xy_temp, function(v, k) {
+            // console.log($.trim(v[0]))
+            // console.log($.trim(v[1]))
+            xy[(x_dic[$.trim(v[0])])*y+(y_dic[$.trim(v[1])])][2]=Number($.trim(v[2]));
+
+
+          });
+          // console.log(xy)
+          $scope.heatmap_chart = {
+            title:title_text_csv,
+            xAxis:{
+              data:xAxis_categories_csv,
+              title:'xAxis title'
+            },
+            yAxis:{
+              data:yAxis_categories_csv,
+              title:'yAxis title'
+            },
+            series:{
+              data:xy,
+              name:'series name'
+            }
+          };
+        };
+      }
+  })
+</script>

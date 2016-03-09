@@ -4,9 +4,13 @@ var js_path = {
 		jsapi:"assets/js/motionchart/jsapi.js",
 		motionchart:"assets/js/motionchart/motionchart.js",
 	},
+	hc:{
+		api:"assets/js/highcharts.js",
+		heatmap:"assets/js/heatmap.js"
+	}
 };
 
-var infoChart = angular.module('infoChart', ['infoChart.google']);
+var infoChart = angular.module('infoChart', ['infoChart.highcharts','infoChart.google']);
 
 
 

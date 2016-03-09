@@ -17,6 +17,8 @@ require(js_path.chart_factory);
 /*定义新模块infoChart.highcharts，在模块中引入封装的绘图方法的highcharts模块*/
 var infoChartHighcharts = angular.module("infoChart.highcharts", ['highcharts']);
 /*定义“自定义html标签”-infoChartsHeatmap，在其中引入对应的绘图方法：highchart*/
+require(js_path.hc.api);
+require(js_path.hc.heatmap);
 infoChartHighcharts.directive('infoChartsHeatmap', function($window,highchart){
 	return{
 		restrict:'EA',
@@ -25,6 +27,7 @@ infoChartHighcharts.directive('infoChartsHeatmap', function($window,highchart){
 			chartData:'='//获取标签属性中chartData中的数据
 		},
 		link: function(scope, elem, attrs){
+			alert(2);
 			// 使用$watch方法监控数据变化，如果数据有辩护自动更新图谱
 			scope.$watch('chartData', function(nv){
 				if (typeof nv.title == 'undefined') {
